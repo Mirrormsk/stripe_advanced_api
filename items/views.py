@@ -15,7 +15,7 @@ class ItemDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context_data = super().get_context_data(**kwargs)
-        context_data['STRIPE_PUBLIC_KEY'] = settings.STRIPE_PUBLIC_KEY
+        context_data["STRIPE_PUBLIC_KEY"] = settings.STRIPE_PUBLIC_KEY
         return context_data
 
 
@@ -26,5 +26,6 @@ class ItemBuyView(RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         item = self.get_object()
         session = StripeApiClient.execute_payment(item)
-        print(session)
-        return Response({'item_id': item.id, "session_id": session.id}, status=status.HTTP_200_OK)
+        return Response(
+            {"item_id": item.id, "session_id": session.id}, status=status.HTTP_200_OK
+        )

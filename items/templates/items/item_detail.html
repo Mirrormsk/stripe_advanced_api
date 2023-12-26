@@ -5,10 +5,13 @@
     <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
-<h1>{{ item.name }}</h1>
-<p>{{ item.description }}</p>
-<p>Price: {{ item.price }}</p>
-<button id="buy-button">Buy</button>
+<div>
+    <h1>{{ item.name }}</h1>
+    <p>{{ item.description }}</p>
+    <p>Price: {{ item.price }}</p>
+    <button id="buy-button">Buy</button>
+</div>
+
 
 <script type="text/javascript">
     var stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
