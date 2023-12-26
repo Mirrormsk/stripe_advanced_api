@@ -35,7 +35,7 @@ class Order(models.Model):
     items = models.ManyToManyField(Item)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='создан')
     discounts = models.ManyToManyField(Discount)
-    tax = models.ForeignKey(Tax, on_delete=models.SET_NULL, **NULLABLE)
+    tax_rates = models.ManyToManyField(Tax)
 
     class Meta:
         verbose_name = 'заказ'
