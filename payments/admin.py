@@ -1,12 +1,5 @@
 from django.contrib import admin
-
-from items.models import Item
 from payments.models import Order, Discount, Tax
-
-
-class ItemSetInline(admin.TabularInline):
-    model = Item
-    extra = 1
 
 
 @admin.register(Order)
