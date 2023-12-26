@@ -24,11 +24,19 @@ class OrderListAPIView(ListAPIView):
 
 
 class OrderPaymentAPIView(APIView):
+    """View for payment"""
+
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
 
     def get(self, request, *args, **kwargs):
-        order = get_object_or_404(Order, pk=kwargs.get('pk'))
+        order = get_object_or_404(Order, pk=kwargs.get("pk"))
         session = StripeApiClient.execute_payment(order)
-        return Response({'order_id': order.id, "session_id": session.id, 'checkout_url': session.url},
-                        status=status.HTTP_200_OK)
+        return Response(
+            {
+                "order_id": order.id,
+                "session_id": session.id,
+                "checkout_url": session.url,
+            },
+            status=status.HTTP_200_OK,
+        )
