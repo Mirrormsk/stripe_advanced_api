@@ -1,9 +1,5 @@
-from typing import Literal
-
 import environ
 import stripe
-from rest_framework import status
-from rest_framework.response import Response
 from stripe.checkout import Session
 
 from items.models import Item
@@ -60,7 +56,6 @@ class StripeApiClient:
     @classmethod
     def get_line_items_from_order(cls, order: Order):
         tax_rates = [cls.create_tax_rate(tax).id for tax in order.tax_rates.all()]
-        print(tax_rates)
         line_items = [{"price": cls.create_price(item).id, "quantity": 1, "tax_rates": tax_rates} for item in order.items.all()]
         return line_items
 
