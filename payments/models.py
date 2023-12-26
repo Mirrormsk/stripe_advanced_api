@@ -48,3 +48,6 @@ class Order(models.Model):
     class Meta:
         verbose_name = "заказ"
         verbose_name_plural = "заказы"
+
+    def __str__(self):
+        return f"Order #{self.id} | {self.created_at}"
