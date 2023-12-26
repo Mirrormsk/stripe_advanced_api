@@ -5,24 +5,24 @@
     <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
-    <h1>{{ item.name }}</h1>
-    <p>{{ item.description }}</p>
-    <p>Price: {{ item.price }}</p>
-    <button id="buy-button">Buy</button>
+<h1>{{ item.name }}</h1>
+<p>{{ item.description }}</p>
+<p>Price: {{ item.price }}</p>
+<button id="buy-button">Buy</button>
 
-    <script type="text/javascript">
-        var stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
-        var buyButton = document.getElementById('buy-button');
+<script type="text/javascript">
+    var stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
+    var buyButton = document.getElementById('buy-button');
 
-        buyButton.addEventListener('click', function () {
-            fetch('/buy/{{ item.id }}', {
-                method: 'GET',
-            })
+    buyButton.addEventListener('click', function () {
+        fetch('/buy/{{ item.id }}', {
+            method: 'GET',
+        })
             .then(function (response) {
                 return response.json();
             })
             .then(function (data) {
-                return stripe.redirectToCheckout({ sessionId: data.session_id });
+                return stripe.redirectToCheckout({sessionId: data.session_id});
             })
             .then(function (result) {
                 if (result.error) {
@@ -32,7 +32,7 @@
             .catch(function (error) {
                 console.error('Error:', error);
             });
-        });
-    </script>
+    });
+</script>
 </body>
 </html>
