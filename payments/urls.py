@@ -9,4 +9,5 @@ urlpatterns = [
     path('', views.OrderListAPIView.as_view(), name='order_list'),
     path('create/', views.OrderCreateAPIView.as_view(), name='order_create'),
     path('<int:pk>/pay/', views.OrderPaymentAPIView.as_view(), name='order_pay'),
+    path('<int:pk>/payment_intent/', views.OrderPaymentIntentAPIView.as_view(), name='order_pay_payment_intent'),
 ]
