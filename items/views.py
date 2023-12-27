@@ -13,8 +13,9 @@ class ItemDetailView(DetailView):
     model = Item
 
     def get_context_data(self, **kwargs):
+        item = self.get_object()
         context_data = super().get_context_data(**kwargs)
-        context_data["STRIPE_PUBLIC_KEY"] = settings.STRIPE_PUBLIC_KEY
+        context_data["STRIPE_PUBLIC_KEY"] = StripeApiClient.get_stripe_public_key(item.currency)
         return context_data
 
 
