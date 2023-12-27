@@ -72,3 +72,7 @@ class Order(models.Model):
 
     def __str__(self):
         return f"Order #{self.id} | {self.created_at}"
+
+    @property
+    def total_price(self):
+        return sum(self.items.values_list("price", flat=True))
