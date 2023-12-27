@@ -1,17 +1,24 @@
-import collections
+import enum
 
 import environ
 import stripe
+from django.conf import settings
 from stripe.checkout import Session
 
 from items.models import Item
 from payments.models import Order, Discount, Tax
-from django.conf import settings
 
 env = environ.Env(DEBUG=(bool, False))
 
 stripe.api_key = settings.STRIPE_DEFAULT_SECRET_KEY
 SUCCESS_URL = env("PAYMENT_SUCCESS_URL")
+
+
+class OperationType(enum.StrEnum):
+    """Stripe operation types"""
+
+    checkout_session = "checkout_session"
+    payment_intent = "payment_intent"
 
 
 class StripeApiClient:
@@ -102,8 +109,33 @@ class StripeApiClient:
 
         return session
 
+    @staticmethod
+    def retrieve_session(session_id: str) -> Session:
+        session = stripe.checkout.Session.retrieve(session_id)
+        return session
+
     @classmethod
-    def execute_payment(cls, payment_object: Order | Item) -> Session:
+    def create_payment_intent(cls, order: Order):
+        currency = order.items.first().currency
+        stripe.api_key = cls.get_stripe_api_key(currency)
+        intent = stripe.PaymentIntent.create(
+            amount=int(order.total_price * 100),
+            currency=currency,
+            description=f"Оплата заказа #{order.id}",
+            metadata={"order_id": order.id},
+
+        )
+        return intent
+
+    @classmethod
+    def execute_payment(
+        cls,
+        payment_object: Order | Item,
+        stripe_payment_type: OperationType = OperationType.checkout_session,
+    ) -> Session | stripe.PaymentIntent:
+        assert isinstance(
+            stripe_payment_type, OperationType
+        ), "stripe_payment_type must be an instance of OperationType"
 
         if isinstance(payment_object, Item):
             order = Order.objects.create()
@@ -114,29 +146,19 @@ class StripeApiClient:
         elif not isinstance(payment_object, Order):
             raise TypeError("Only Order and Item objects are supported")
 
-        session = cls.create_session(payment_object)
+        match stripe_payment_type:
+            case OperationType.checkout_session:
+                result = cls.create_session(payment_object)
+            case OperationType.payment_intent:
+                result = cls.create_payment_intent(payment_object)
+            case _:
+                raise ValueError("Operation type not supported")
 
-        return session
+        return result
 
-    @staticmethod
-    def retrieve_session(session_id: str) -> Session:
-        session = stripe.checkout.Session.retrieve(session_id)
-        return session
-
-    # @staticmethod
-    # def create_payment_intent(order: Order):
-    #     intent = stripe.PaymentIntent.create(
-    #         amount=int(order.total_price() * 100),  # сумма в центах
-    #         currency='usd',
-    #         description=f'Оплата заказа #{order.id}',
-    #         payment_method=request.data.get('payment_method'),  # ID платежного метода, например, 'pm_card_visa'
-    #         confirm=True,
-    #         metadata={'order_id': order.id},
-    #     )
-
-
-class PaymentService:
-    """Payment service"""
-
-    def create_payment(self, order: Order) -> dict:
-        ...
+    @classmethod
+    def execute_payment_intent(cls, payment_object: Order | Item) -> stripe.PaymentIntent:
+        payment_intent = cls.execute_payment(
+            payment_object, OperationType.payment_intent
+        )
+        return payment_intent
