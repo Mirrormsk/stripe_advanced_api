@@ -1,41 +1,29 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Item Detail</title>
-    <script src="https://js.stripe.com/v3/"></script>
-</head>
-<body>
-<div>
-    <h1>{{ item.name }}</h1>
-    <p>{{ item.description }}</p>
-    <p>Price: {{ item.price }}</p>
-    <button id="buy-button">Buy</button>
+{% extends 'items/base.html' %}
+
+{% block content %}
+	<div class="container mt-5">
+    <div class="col-4">
+        <div class="card mb-4 rounded-3 shadow-sm">
+
+            <!--Content-->
+
+            <div class="card-header">
+                <strong>{{ item.name }}</strong>
+            </div>
+
+            <div class="card-body">
+                <p class="lead">
+                    {{ item.price }}
+                </p>
+
+                <strong><p style="font-size: 20px;">Описание</p></strong>
+
+                <p>{{ item.description }}</p>
+                <button id="buy-button" class="w-25 btn btn-lg btn-primary">
+                Buy
+            </button>
+            </div>
+        </div>
+    </div>
 </div>
-
-
-<script type="text/javascript">
-    var stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
-    var buyButton = document.getElementById('buy-button');
-
-    buyButton.addEventListener('click', function () {
-        fetch('/buy/{{ item.id }}', {
-            method: 'GET',
-        })
-            .then(function (response) {
-                return response.json();
-            })
-            .then(function (data) {
-                return stripe.redirectToCheckout({sessionId: data.session_id});
-            })
-            .then(function (result) {
-                if (result.error) {
-                    alert(result.error.message);
-                }
-            })
-            .catch(function (error) {
-                console.error('Error:', error);
-            });
-    });
-</script>
-</body>
-</html>
+{% endblock %}
