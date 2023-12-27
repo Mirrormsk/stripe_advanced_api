@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.views.generic import DetailView
+from django.views.generic import DetailView, ListView
 from rest_framework import status
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
@@ -15,8 +15,14 @@ class ItemDetailView(DetailView):
     def get_context_data(self, **kwargs):
         item = self.get_object()
         context_data = super().get_context_data(**kwargs)
-        context_data["STRIPE_PUBLIC_KEY"] = StripeApiClient.get_stripe_public_key(item.currency)
+        context_data["STRIPE_PUBLIC_KEY"] = StripeApiClient.get_stripe_public_key(
+            item.currency
+        )
         return context_data
+
+
+class ItemListView(ListView):
+    model = Item
 
 
 class ItemBuyView(RetrieveAPIView):
