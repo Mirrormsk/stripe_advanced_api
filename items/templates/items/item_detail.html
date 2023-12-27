@@ -27,3 +27,30 @@
     </div>
 </div>
 {% endblock %}
+
+{% block scripts %}
+	<script type="text/javascript">
+    var stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
+    var buyButton = document.getElementById('buy-button');
+
+    buyButton.addEventListener('click', function () {
+        fetch('/buy/{{ item.id }}', {
+            method: 'GET',
+        })
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                return stripe.redirectToCheckout({sessionId: data.session_id});
+            })
+            .then(function (result) {
+                if (result.error) {
+                    alert(result.error.message);
+                }
+            })
+            .catch(function (error) {
+                console.error('Error:', error);
+            });
+    });
+</script>
+{% endblock %}
