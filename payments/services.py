@@ -1,6 +1,5 @@
 import enum
 
-import environ
 import stripe
 from django.conf import settings
 from stripe import PaymentIntent
@@ -9,10 +8,9 @@ from stripe.checkout import Session
 from items.models import Item
 from payments.models import Order, Discount, Tax
 
-env = environ.Env(DEBUG=(bool, False))
 
 stripe.api_key = settings.STRIPE_DEFAULT_SECRET_KEY
-SUCCESS_URL = env("PAYMENT_SUCCESS_URL")
+SUCCESS_URL = settings.PAYMENT_SUCCESS_URL
 
 
 class OperationType(enum.StrEnum):
@@ -124,7 +122,6 @@ class StripeApiClient:
             currency=currency,
             description=f"Оплата заказа #{order.id}",
             metadata={"order_id": order.id},
-
         )
         return intent
 
@@ -158,7 +155,9 @@ class StripeApiClient:
         return result
 
     @classmethod
-    def execute_payment_intent(cls, payment_object: Order | Item) -> stripe.PaymentIntent:
+    def execute_payment_intent(
+        cls, payment_object: Order | Item
+    ) -> stripe.PaymentIntent:
         payment_intent = cls.execute_payment(
             payment_object, OperationType.payment_intent
         )
