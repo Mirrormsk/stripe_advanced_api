@@ -3,6 +3,7 @@ import enum
 import environ
 import stripe
 from django.conf import settings
+from stripe import PaymentIntent
 from stripe.checkout import Session
 
 from items.models import Item
@@ -69,7 +70,7 @@ class StripeApiClient:
         return coupon
 
     @staticmethod
-    def create_tax_rate(tax: Tax):
+    def create_tax_rate(tax: Tax) -> stripe.TaxRate:
         """Creates a Stripe Tax object"""
         stripe_tax = stripe.TaxRate.create(
             display_name=tax.display_name,
@@ -81,7 +82,7 @@ class StripeApiClient:
         return stripe_tax
 
     @classmethod
-    def get_line_items_from_order(cls, order: Order):
+    def get_line_items_from_order(cls, order: Order) -> list[dict]:
         tax_rates = [cls.create_tax_rate(tax).id for tax in order.tax_rates.all()]
         line_items = [
             {"price": cls.create_price(item).id, "quantity": 1, "tax_rates": tax_rates}
@@ -115,7 +116,7 @@ class StripeApiClient:
         return session
 
     @classmethod
-    def create_payment_intent(cls, order: Order):
+    def create_payment_intent(cls, order: Order) -> PaymentIntent:
         currency = order.items.first().currency
         stripe.api_key = cls.get_stripe_api_key(currency)
         intent = stripe.PaymentIntent.create(
