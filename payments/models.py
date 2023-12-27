@@ -7,16 +7,36 @@ NULLABLE = {"null": True, "blank": True}
 
 class Discount(models.Model):
     percent_off = models.DecimalField(
-        max_digits=6, decimal_places=2, verbose_name="процент скидки", default=0
+        max_digits=5, decimal_places=2, verbose_name="процент скидки", default=0
     )
     amount_off = models.DecimalField(
-        max_digits=6, decimal_places=2, verbose_name="сумма скидки", default=0
+        max_digits=10, decimal_places=2, verbose_name="сумма скидки", default=0
     )
-    currency = models.CharField(max_length=3, **NULLABLE, verbose_name="валюта")
+    currency = models.CharField(max_length=3, verbose_name="валюта")
 
     class Meta:
         verbose_name = "скидка"
         verbose_name_plural = "скидки"
+
+        constraints = [
+            models.CheckConstraint(
+                check=models.Q(percent_off__gte=0),
+                name="percent_off_positive",
+            ),
+            models.CheckConstraint(
+                check=models.Q(percent_off__lte=100),
+                name="percent_off_max_value",
+            ),
+            models.CheckConstraint(
+                check=models.Q(amount_off__gte=0),
+                name="amount_off_positive",
+            ),
+        ]
+
+    def save(self, *args, **kwargs):
+        """Makes currency uppercase"""
+        self.currency = self.currency.upper()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return (
@@ -33,6 +53,7 @@ class Tax(models.Model):
     display_name = models.CharField(max_length=20, verbose_name="название")
     inclusive = models.BooleanField(verbose_name="включен")
     description = models.TextField(verbose_name="описание", **NULLABLE)
+    country = models.CharField(max_length=100, verbose_name="страна", **NULLABLE)
 
     class Meta:
         verbose_name = "налог"
