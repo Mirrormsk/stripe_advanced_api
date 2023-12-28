@@ -7,8 +7,9 @@ WORKDIR /code
 
 RUN #apt-get update && apt-get install -y gcc libjpeg-dev libpq-dev
 
-RUN pip3 install --upgrade pip
-RUN pip3 install poetry
+RUN pip install --upgrade pip
+RUN pip install --default-timeout=100 future
+RUN pip install poetry
 
 COPY ./poetry.lock /code/poetry.lock
 COPY ./pyproject.toml /code/pyproject.toml
