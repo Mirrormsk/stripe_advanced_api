@@ -5,7 +5,7 @@ ENV PYTHONUNBUFFERED 1
 ENV POETRY_VERSION 1.7.1
 WORKDIR /code
 
-RUN apt-get update && apt-get install -y gcc libjpeg-dev libpq-dev
+RUN #apt-get update && apt-get install -y gcc libjpeg-dev libpq-dev
 
 RUN pip install --upgrade pip
 RUN pip install "poetry==$POETRY_VERSION"
