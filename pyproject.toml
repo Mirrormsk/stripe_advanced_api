@@ -15,8 +15,13 @@ psycopg2 = "^2.9.9"
 ipython = "^8.19.0"
 drf-yasg = "^1.21.7"
 setuptools = "^69.0.3"
+psycopg2-binary = "^2.9.9"
+gunicorn = "^21.2.0"
 
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[virtualenvs]
+create = false
