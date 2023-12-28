@@ -7,8 +7,8 @@ WORKDIR /code
 
 RUN #apt-get update && apt-get install -y gcc libjpeg-dev libpq-dev
 
-RUN pip install --upgrade pip
-RUN pip install "poetry==$POETRY_VERSION"
+#RUN pip install --upgrade pip
+RUN pip install poetry
 
 COPY ./poetry.lock /code/poetry.lock
 COPY ./pyproject.toml /code/pyproject.toml
