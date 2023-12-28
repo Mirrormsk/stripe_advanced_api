@@ -10,6 +10,7 @@ services:
     restart: on-failure
     volumes:
       - .:/code
+      - ./static/:/code/static/
     ports:
       - "80:8000"
     depends_on:
@@ -20,6 +21,7 @@ services:
       - .env.prod
     networks:
       - app-network
+
 
   db:
     image: postgres:latest
@@ -43,6 +45,12 @@ services:
       - "5432"
     networks:
       - app-network
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./static/:/static
+    ports:
+      - 80:80
 
 networks:
   app-network:
