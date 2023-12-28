@@ -45,14 +45,6 @@ services:
       - "5432"
     networks:
       - app-network
-  nginx:
-    image: nginx:alpine
-    volumes:
-      - ./static/:/static
-    ports:
-      - 80:80
-    depends_on:
-      - app
 
 networks:
   app-network:
@@ -60,3 +52,4 @@ networks:
 
 volumes:
   postgres_data:
+
