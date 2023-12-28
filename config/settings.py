@@ -1,19 +1,20 @@
-import environ
 from pathlib import Path
+import os
+import environ
 
-env = environ.Env(
-    DEBUG=(bool, False)
-)
+env = environ.Env(DEBUG=(bool, False))
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-environ.Env.read_env(BASE_DIR / '.env')
+env_file = os.getenv('ENV_FILE', '../.env')
 
-SECRET_KEY = env('SECRET_KEY')
+environ.Env.read_env(BASE_DIR / env_file)
 
-DEBUG = env('DEBUG')
+SECRET_KEY = env("SECRET_KEY")
 
-ALLOWED_HOSTS = []
+DEBUG = env("DEBUG")
+
+ALLOWED_HOSTS = ['0.0.0.0', 'localhost', "127.0.0.1", '192.168.1.174', "79.174.86.120"]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -22,10 +23,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     "rest_framework",
     "drf_yasg",
-
     "items",
     "payments",
 ]
@@ -45,8 +44,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / 'templates']
-        ,
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -61,9 +59,18 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
+
 DATABASES = {
-    "default": env.db()
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": env("POSTGRES_DB", default="postgres"),
+        "USER": env("POSTGRES_USER", default="postgres"),
+        "PASSWORD": env("POSTGRES_PASSWORD", default="postgres"),
+        "HOST": env("POSTGRES_HOST", default="localhost"),
+        "PORT": "5432",
+    }
 }
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -100,4 +107,3 @@ STRIPE_SECRET_KEY_EUR = env("STRIPE_SECRET_KEY_EUR")
 
 STRIPE_DEFAULT_SECRET_KEY = STRIPE_SECRET_KEY_USD
 STRIPE_DEFAULT_PUBLIC_KEY = STRIPE_PUBLIC_KEY_USD
-
