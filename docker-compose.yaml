@@ -10,7 +10,7 @@ services:
     restart: on-failure
     volumes:
       - .:/code
-      - static_data:./static/
+      - static:./static/
     ports:
       - "8000:8000"
     depends_on:
@@ -59,4 +59,5 @@ networks:
 
 volumes:
   postgres_data:
+  static:
 
