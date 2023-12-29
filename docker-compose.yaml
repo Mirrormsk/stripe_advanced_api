@@ -1,4 +1,4 @@
-version: '3'
+version: '3.9'
 
 services:
   app:
@@ -10,7 +10,7 @@ services:
     restart: on-failure
     volumes:
       - .:/code
-      - ./static/:/static/
+      - static_data:./static/
     ports:
       - "8000:8000"
     depends_on:
