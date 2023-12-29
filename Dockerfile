@@ -16,4 +16,4 @@ COPY ./pyproject.toml /code/pyproject.toml
 RUN poetry  config virtualenvs.create false --local && poetry install
 COPY . .
 
-CMD ["poetry", "run", "python3", "manage.py", "runserver", "0.0.0.0:8000"]
+#CMD ["poetry", "run", "python3", "manage.py", "runserver", "0.0.0.0:8000"]

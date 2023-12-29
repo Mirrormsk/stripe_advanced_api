@@ -3,7 +3,7 @@ version: '3'
 services:
   app:
     build: .
-    command: "gunicorn config.wsgi:application -b 0.0.0.0:8000"
+    command: "gunicorn -w 2 config.wsgi:application -b 0.0.0.0:8000 "
 #    command: "poetry run python3 manage.py runserver 0.0.0.0:8000"
 
     platform: linux/amd64
@@ -45,6 +45,13 @@ services:
       - "5432"
     networks:
       - app-network
+
+  web:
+    image: nginx:latest
+    volumes:
+      - "./code:/var/www/html"
+    ports:
+      - "80:80"
 
 networks:
   app-network:
